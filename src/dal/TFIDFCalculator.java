@@ -28,10 +28,11 @@ public class TFIDFCalculator {
 		double totalTfIdf = 0.0;
 		for (String word : tf.keySet()) {
 			double tfValue = tf.get(word);
-			double idfValue = idf.getOrDefault(word, Math.log(corpus.size() + 1));
+			double idfValue = idf.getOrDefault(word, 0.0);
 			totalTfIdf += tfValue * idfValue;
 		}
 
+		if (wordList.size() == 0) return 0.0;
 		return totalTfIdf / wordList.size();
 	}
 
@@ -44,7 +45,11 @@ public class TFIDFCalculator {
 		}
 
 		for (String word : tf.keySet()) {
-			tf.put(word, tf.get(word) / totalWords);
+			if (totalWords > 0) {
+				tf.put(word, tf.get(word) / totalWords);
+			} else {
+				tf.put(word, 0.0);
+			}
 		}
 
 		return tf;
