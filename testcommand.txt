@@ -1,0 +1,2 @@
+ java -cp ".;lib/*;resource/log4j-api-2.20.0.jar;resource/log4j-core-2.20.0.jar;bin_test" org.junit.runner.JUnitCore data.SingletonTest data.HashingTest
+
