@@ -36,7 +36,9 @@ public class FileImporter {
             if (selectedFiles.length > 0) {
                 for (File selectedFile : selectedFiles) {
                     String fileName = selectedFile.getName();
-                    boolean isImport = businessObj.importTextFiles(selectedFile, fileName);
+                    bll.command.ImportCommand importCommand = new bll.command.ImportCommand(businessObj, selectedFile, fileName);
+                    boolean isImport = importCommand.execute();
+                    
                     JOptionPane.showMessageDialog(null,
                             isImport ? fileName + " uploaded successfully!" : fileName + " failed to upload!");
                     logger.info(isImport ? fileName + " uploaded successfully!" : fileName + " failed to upload!");
