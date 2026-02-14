@@ -858,7 +858,9 @@ public class EditorPO extends JFrame {
 				content = "";
 			}
 
-			boolean updated = businessObj.updateFile(fileId, fileName, currentPage, content);
+			bll.command.SaveCommand saveCommand = new bll.command.SaveCommand(businessObj, fileId, fileName, currentPage, content);
+			boolean updated = saveCommand.execute();
+			
 			JOptionPane.showMessageDialog(null,
 					updated ? "File updated successfully!" : "File update failed. Duplicate file may exist.");
 			logger.info(updated ? "File updated successfully!" : "File update failed. Duplicate file may exist.");
@@ -875,16 +877,18 @@ public class EditorPO extends JFrame {
 			String fileName = (String) tableModel.getValueAt(selectedRow, 1);
 			String content = contentTextArea.getText();
 
-		int wordCount = calculateWordCount(content);
-		if (wordCount <= 500) {
-			return;
-		}
+			int wordCount = calculateWordCount(content);
+			if (wordCount <= 500) {
+				return;
+			}
 
 			if (content == null || content.trim().isEmpty()) {
 				content = "";
 			}
 
-			boolean updated = businessObj.updateFile(fileId, fileName, currentPage, content);
+			bll.command.SaveCommand saveCommand = new bll.command.SaveCommand(businessObj, fileId, fileName, currentPage, content);
+			boolean updated = saveCommand.execute();
+			
 			if (updated) {
 				savingStatusLabel.setVisible(true);
 				Thread.sleep(5000);
@@ -935,11 +939,15 @@ public class EditorPO extends JFrame {
 		String content = contentTextArea.getText();
 		int pageId = pages.get(currentPage - 1).getPageId();
 		if (content != null && !content.trim().isEmpty()) {
-			String transliteratedContent = businessObj.transliterate(pageId, content);
-			transliteratedTextArea.setText(transliteratedContent);
-
-			CardLayout cardLayout = (CardLayout) getContentPane().getLayout();
-			cardLayout.show(getContentPane(), "TransliterationView");
+			bll.command.TransliterateCommand transliterateCommand = new bll.command.TransliterateCommand(businessObj, pageId, content);
+			
+			if (transliterateCommand.execute()) {
+				transliteratedTextArea.setText(transliterateCommand.getResult());
+				CardLayout cardLayout = (CardLayout) getContentPane().getLayout();
+				cardLayout.show(getContentPane(), "TransliterationView");
+			} else {
+				JOptionPane.showMessageDialog(null, "Transliteration failed.");
+			}
 		} else {
 			JOptionPane.showMessageDialog(null, "Content is empty. Please enter text to transliterate.");
 			logger.warn("Content is empty. Please enter text to transliterate.");
